@@ -1,78 +1,74 @@
 #include "sort.h"
-#include <stdlib.h>
 #include <stdio.h>
-
-
-void swap(int *array, size_t size, int idx, int wall);
-void partition(int *array, size_t size, int lo, int hi);
+#include <stdlib.h>
 
 /**
- * quick_sort - sort an array using the quick sort algorithm.
- * @array: pointer to an array
+ * partition - scans a partition of an array of integers for values less than
+ * pivot value, and swaps them with first value in partition, then swaps pivot
+ * value with first value in partition
  * Author: Omar Caguazango
- * @size: size of @array
+ * @array: array of integers to be sorted
+ * @low: index in array that begins partition
+ * @high: index in array that ends partition
+ * @size: amount of elements in array
+ * Return: new index at which to start new recursive partition
+ */
+int partition(int *array, int low, int high, size_t size)
+{
+	int i, j, pivot, temp;
+
+	pivot = array[high];
+	i = low;
+	for (j = low; j < high; j++)
+	{
+		if (array[j] < pivot)
+		{
+			temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+			if (array[i] != array[j])
+				print_array(array, size);
+			i++;
+		}
+	}
+	temp = array[i];
+	array[i] = array[high];
+	array[high] = temp;
+	if (array[i] != array[high])
+		print_array(array, size);
+	return (i);
+}
+
+/**
+ * quicksort - recursively sorts array of integers by separating into two
+ * partitions, using Lomuto quick sort
+ * @array: array of integers to be sorted
+ * @low: index in array that begins partition
+ * @high: index in array that ends partition
+ * @size: amount of elements in array
+ */
+void quicksort(int *array, int low, int high, size_t size)
+{
+	int p;
+
+	if (low < high)
+	{
+		p = partition(array, low, high, size);
+		quicksort(array, low, p - 1, size);
+		quicksort(array, p + 1, high, size);
+	}
+}
+
+/**
+ * quick_sort - sorts an array of integers in ascending order using a quick
+ * sort algorithm, with Lomuto partition scheme
+ * @array: array of integers to be sorted
+ * @size: amount of elements in array
  */
 void quick_sort(int *array, size_t size)
 {
-	if (!array || size == 0)
-		return;
-	partition(array, size, 0, size - 1);
-
-}
-
-/**
- * swap - swaps 2 elements of a given array.
- *
- * @array: point to an array
- * @size: size of the array.
- * @idx: index of postion withing the array
- * @wall: index of postion withing the array
- */
-void swap(int *array, size_t size, int idx, int wall)
-{
-	int tmp = array[wall];
-
-	if (idx != wall)
-	{
-		array[wall] = array[idx];
-		array[idx] = tmp;
-		print_array(array, size);
-	}
-}
-
-/**
- * partition - sort a partition of an array and if need will recursevly
- * partition the array again.
- *
- * @array: arary to be partitioned and sorted
- * @size: size of the array
- * @lo: begin of a partition. (left side)
- * @hi: end of a partition. (right side)
- */
-void partition(int *array, size_t size, int lo, int hi)
-{
-	int i, pivot, wall;
-
-	if ((hi) - lo <= 0)
-		return;
-	if (hi == 1 && array[0] < array[hi])
+	if (!array || size < 2)
 		return;
 
-	i = wall = lo;
-	pivot = hi;
-	while (i < pivot)
-	{
-		if (array[i] < array[pivot])
-		{
-			swap(array, size, i, wall);
-			wall++;
-		}
-		i++;
-	}
-	swap(array, size, pivot, wall);
-
-	if (hi - lo > 0)
-		partition(array, size, wall + 1, hi);
-	if (hi - lo > 0)
-		partition(array, size, lo, wall - 1);
+	quicksort(array, 0, (int)size - 1, size);
 }
